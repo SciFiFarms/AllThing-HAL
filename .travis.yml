@@ -1,0 +1,26 @@
+language: python
+python:
+- '2.7'
+sudo: false
+cache:
+  directories:
+  - "~/.platformio"
+install:
+- pip install -U platformio
+- platformio platform install espressif8266 --with-package tool-mkspiffs
+script:
+- platformio --version
+- platformio run -e emonesp_deploy
+- platformio run -t buildfs -e emonesp_deploy
+deploy:
+  provider: releases
+  skip_cleanup: true
+  overwrite: true
+  api_key:
+    secure: hZ1DWYtWFIV3ubnehD/rcQHfKje37KcR6DpKL2jgtf2GKQEpg6rsa85qLERunLTIhogJ0XqoavX32cOhJBxMb9fTcPnpFnEyn8Lh0/TPYbrc35k9HHvIadhgsh5igCStsOt7+3ntJL/CCOd/MW90We3vuSLAV2Gsf311RaDM6wXJqv5m9WUghVztVMI3rBQXdEOgSXGgPMVBfU+dSyesKxotRId/ISGJIqvg3mCgCnfmQMrEupXzPkk7C9uOcQiPrBuCuhlkyjsiL1XsSO3yW4a9E6fcFrREIr8QGvc5GTx/nDary+3R6WqjbhPknimk4t89IF2Osonult3Xb8jt383vUsDZwnxL/F80bPcL+yYqMEDLkri3nHpu8S/Uh43D1WkKgLuEz4dm8xuIyzkCw4ODlKhgUueHfqH4JIdvVKivuHpJBPhpYPfR2ifReyak5bcYw4Pq4SyIQt8ND6zjTx39IbKrxbA2VGXOgcJ3vpKGVwflfLiN+KFo+Bo1jGuYL1L//8H9msJtlZQvxdNJ6lBh5mKnemgx4rnFJtYTEbzVtqyp275ccYqmk1mN9PDogYb2uqa/+qFcbtQQBl9274jQnBArhACo/ME5B6EfSaP+i123z7LcBr16lj1+p/WXwPgF4YcQ/RXHm52+fiLDI3bgEf4WH5vrgEDHafiSfqY=
+  file:
+  - ".pioenvs/emonesp_deploy/firmware.bin"
+  - ".pioenvs/emonesp_deploy/spiffs.bin"
+  on:
+    all_branches: true
+    condition: $TRAVIS_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$

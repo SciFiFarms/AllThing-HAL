@@ -1,0 +1,19 @@
+{
+  "name": "Plant eye 1",
+  "device_id": "pe001",  "wifi": {
+    "ssid": "tincantelephone",
+    "password": "amst3rdam"
+  },
+  "mqtt": {
+    "host": "192.168.1.106",
+    "port": 1883,
+    "base_topic": "planteyes/",
+    "username": "esp"
+  },
+  "ota": {
+    "enabled": true
+  },
+  "settings": {
+    "percentage": 55
+  }
+}
