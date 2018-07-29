@@ -1,57 +1,68 @@
 #include <Homie.h>
 //#include <GDBStub.h>
+#include <Adafruit_Sensor.h>
 
-float temperature;
-float humidity;
-const int TEMP_INTERVAL = 10;                   // seconds
-unsigned long last_temp_sent = 0;
+// DHT sensor consts/vars
+  #include "DHT.h"
+  #define DHTPIN     D2     // What pin we're connected to
+  #define DHTTYPE    DHT22  // Can be DHT11, DHT22 (AM2302), DHT21 (AM2301)
+  DHT dht(DHTPIN, DHTTYPE); // Initialize DHT sensor for normal 16mhz Arduino
+  
+  //DHT dht;
+
+const int MEASURE_INTERVAL = 1; // How often to poll DHT22 for temperature and humidity
+
+unsigned long lastMeasureSent = 0;
 
 HomieNode temperatureNode("temperature", "temperature");
 HomieNode humidityNode("humidity", "humidity");
 
 void loopHandler() {
-  if (millis() - last_temp_sent >= TEMP_INTERVAL * 1000UL || last_temp_sent == 0) 
-  {
-       
-//                sht30.get();
-//                temperature = sht30.cTemp;
-//                humidity = sht30.humidity;
-
-    Serial.print("Temperature: ");
-    Serial.print(temperature);
-    Serial.println(" °C");
-
-    Serial.print("Humidity: ");
-    Serial.print(humidity);
-    Serial.println(" %");
-
-    if (temperatureNode.setProperty("degrees").send(String(temperature)))
-    {
-      last_temp_sent = millis();
+  if (millis() - lastMeasureSent >= MEASURE_INTERVAL * 1000UL || lastMeasureSent == 0) {
+    float temperature = dht.readTemperature(); // Read temperature as Celsius
+    float humidity = dht.readHumidity(); // Read humidity as relative [0-100]%
+    if (isnan(temperature) || isnan(humidity)) {
+      Homie.getLogger() << F("Failed to read from DHT sensor!");
+    } else {
+      Homie.getLogger() << F("Temperature: ") << temperature << " °C" << endl;
+      Homie.getLogger() << F("Humidity   : ") << humidity << " %" << endl;
+      temperatureNode.setProperty("degrees").send(String(temperature));
+      humidityNode.setProperty("relative").send(String(humidity));
     }
- //1j   Homie.setNodeProperty(humidityNode, "percent", String(humidity), true);
-    humidityNode.setProperty("percent").send(String(humidity));
-//  delay(1000);
+    lastMeasureSent = millis();
   }
 }
 
 void setupHandler() {
-  temperatureNode.setProperty("unit").send("C");
+  // Nodes part
+  temperatureNode.setProperty("unit").send("c");
   humidityNode.setProperty("unit").send("%");
+
+  // Hardware part
+  pinMode(DHTPIN, OUTPUT);
+  dht.begin();
+  Homie.getLogger() << "DHT " << DHTTYPE << " on pin " << DHTPIN << endl;
 }
-
-
 
 void setup() {
-  Serial.begin(115200);
-//#ifdef ENABLE_GDB
-	//gdbstub_init();
-//#endif
-  Homie.setSetupFunction(setupHandler);
-  Homie.setLoopFunction(loopHandler);
+  Serial.begin(115200); // Required to enable serial output
+  Homie.setLedPin(15, HIGH);
+  //Homie.enableBuiltInLedIndicator(false);
+  //dht.setup(2); // data pin 2
+  Serial << "HELLO" << endl;
+
   Homie_setFirmware("boxbot", "1.0.0");
+  Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
+
+  temperatureNode.advertise("unit");
+  temperatureNode.advertise("degrees");
+
+  humidityNode.advertise("unit");
+  humidityNode.advertise("relative");
+
   Homie.setup();
 }
+
 
 void loop() {
   Homie.loop();
