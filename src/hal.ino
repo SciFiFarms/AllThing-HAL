@@ -1,6 +1,8 @@
 #include <Homie.h>
 //#include <GDBStub.h>
 //#include <HomieSetting.h>
+//#include <SensorNode.hpp>
+#include "../SensorNode.hpp"
 #include <Adafruit_Sensor.h>
 
 // TODO: Refactor MEASURE_INTERVAL to be a setting that is retrieved.
@@ -21,8 +23,8 @@ DHT *dht21; // Initialize DHT sensor for normal 16mhz Arduino
   HomieNode *dht21_humidityNode;
 DHT *dht22; // Initialize DHT sensor for normal 16mhz Arduino
   HomieSetting<long> dht22Setting("dht22_pin", "Which pin to use.");  // id, description
-  HomieNode *dht22_temperatureNode;
-  HomieNode *dht22_humidityNode;
+  SensorNode *dht22_temperatureNode;
+  SensorNode *dht22_humidityNode;
 
 // List of supported sensors and their IDs.
 #define SENSOR_DHT11_ID = 1
