@@ -1,0 +1,7 @@
+Dockerfile
+.gitignore
+.vscode
+.travis.yml
+# If this actually isn't needed, I should remove it. I don't know what it's for.
+jsconfig.json 
+
