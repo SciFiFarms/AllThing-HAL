@@ -2,7 +2,7 @@
 //#include <GDBStub.h>
 //#include <HomieSetting.h>
 //#include <SensorNode.hpp>
-#include "../SensorNode.hpp"
+#include "sensor/SensorNode.hpp"
 #include <Adafruit_Sensor.h>
 
 // TODO: Refactor MEASURE_INTERVAL to be a setting that is retrieved.
@@ -172,8 +172,8 @@ void setup() {
   //}
   //if(dht22Setting.wasProvided())
   //{
-    dht22_temperatureNode = new HomieNode("dht22_temperature", "sensor");
-    dht22_humidityNode = new HomieNode("dht22_humidity", "sensor");
+    dht22_temperatureNode = new SensorNode("dht22_temperature", TYPE_SENSOR);
+    dht22_humidityNode = new SensorNode("dht22_humidity", TYPE_SENSOR);
     dht22_temperatureNode->advertise("unit");
     dht22_temperatureNode->advertise("degrees");
     dht22_humidityNode->advertise("unit");
