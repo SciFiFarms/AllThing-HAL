@@ -168,34 +168,37 @@ void setup() {
   dht22Setting.setDefaultValue(0).setValidator([] (long candidate) {
     return (candidate >= 0) && (candidate <= 100);
   }); 
+  Homie.loadSettings();
 
   sensors.setStorage(storage_array);
 
-  // TODO: I've commented out these if statements because as of homie 2.0.0,
-  // the setting objects aren't setup before Homie.setup() is called. In 2.1, 
-  // it sounds like I'll be able to call Homie.loadSettings() or something like
-  // that to initialise the setting objects.
-  //if(dht11Setting.wasProvided())
-  //{
+  if(dht11Setting.wasProvided())
+  {
     dht11_temperatureNode = new HomieNode("dht11_temperature", "temperature");
     dht11_humidityNode = new HomieNode("dht11_humidity", "humidity");
     dht11_temperatureNode->advertise("unit");
     dht11_temperatureNode->advertise("degrees");
     dht11_humidityNode->advertise("unit");
     dht11_humidityNode->advertise("relative");
+  }
+  if(dht21Setting.wasProvided())
+  {
     dht21_temperatureNode = new HomieNode("dht21_temperature", "temperature");
     dht21_humidityNode = new HomieNode("dht21_humidity", "humidity");
     dht21_temperatureNode->advertise("unit");
     dht21_temperatureNode->advertise("degrees");
     dht21_humidityNode->advertise("unit");
     dht21_humidityNode->advertise("relative");
+  }
+  if(dht22Setting.wasProvided())
+  {
     dht22_temperatureNode = new SensorNode("dht22_temperature", TYPE_SENSOR);
     dht22_humidityNode = new SensorNode("dht22_humidity", TYPE_SENSOR);
     dht22_temperatureNode->advertise("unit");
     dht22_temperatureNode->advertise("degrees");
     dht22_humidityNode->advertise("unit");
     dht22_humidityNode->advertise("relative");
-  //}
+  }
 
   Homie.setup();
 }
