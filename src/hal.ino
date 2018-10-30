@@ -1,7 +1,4 @@
 #include <Homie.h>
-//#include <GDBStub.h>
-//#include <HomieSetting.h>
-//#include <SensorNode.hpp>
 #include "sensor/SensorNode.hpp"
 #include <Adafruit_Sensor.h>
 
@@ -90,11 +87,7 @@ void setupHandler() {
   if(dht11Setting.wasProvided())
   {
     // Nodes part
-    dht11_temperatureNode->advertise("unit");
-    dht11_temperatureNode->advertise("degrees");
     dht11_temperatureNode->setProperty("unit").send("c");
-    dht11_humidityNode->advertise("unit");
-    dht11_humidityNode->advertise("relative");
     dht11_humidityNode->setProperty("unit").send("%");
 
     // Hardware part
@@ -106,11 +99,7 @@ void setupHandler() {
   if(dht21Setting.wasProvided())
   {
     // Nodes part
-    dht21_temperatureNode->advertise("unit");
-    dht21_temperatureNode->advertise("degrees");
     dht21_temperatureNode->setProperty("unit").send("c");
-    dht21_humidityNode->advertise("unit");
-    dht21_humidityNode->advertise("relative");
     dht21_humidityNode->setProperty("unit").send("%");
 
     // Hardware part
@@ -164,14 +153,16 @@ void setup() {
   //{
     dht11_temperatureNode = new HomieNode("dht11_temperature", "temperature");
     dht11_humidityNode = new HomieNode("dht11_humidity", "humidity");
-  //}
-  //if(dht21Setting.wasProvided())
-  //{
+    dht11_temperatureNode->advertise("unit");
+    dht11_temperatureNode->advertise("degrees");
+    dht11_humidityNode->advertise("unit");
+    dht11_humidityNode->advertise("relative");
     dht21_temperatureNode = new HomieNode("dht21_temperature", "temperature");
     dht21_humidityNode = new HomieNode("dht21_humidity", "humidity");
-  //}
-  //if(dht22Setting.wasProvided())
-  //{
+    dht21_temperatureNode->advertise("unit");
+    dht21_temperatureNode->advertise("degrees");
+    dht21_humidityNode->advertise("unit");
+    dht21_humidityNode->advertise("relative");
     dht22_temperatureNode = new SensorNode("dht22_temperature", TYPE_SENSOR);
     dht22_humidityNode = new SensorNode("dht22_humidity", TYPE_SENSOR);
     dht22_temperatureNode->advertise("unit");
