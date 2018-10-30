@@ -1,6 +1,7 @@
 #include <Homie.h>
 #include "sensor/SensorNode.hpp"
 #include <Adafruit_Sensor.h>
+#include <Vector.h>
 
 // TODO: Refactor MEASURE_INTERVAL to be a setting that is retrieved.
 const int MEASURE_INTERVAL = 1; // How often to poll DHT22 for temperature and humidity
@@ -24,10 +25,21 @@ DHT_Unified *dhtu22; // Initialize DHT sensor for normal 16mhz Arduino
   SensorNode *dht22_temperatureNode;
   SensorNode *dht22_humidityNode;
 
-// List of supported sensors and their IDs.
-#define SENSOR_DHT11_ID = 1
-#define SENSOR_DHT21_ID = 2 
-#define SENSOR_DHT22_ID = 3
+// Pair a sensor to a node to make sending statuses a breeze. 
+struct SensorNodePair {
+  Adafruit_Sensor *sensor;
+  HomieNode *node;
+  public:
+    SensorNodePair(Adafruit_Sensor* s, HomieNode* n):
+      sensor(s),
+      node(n)
+    {}
+    SensorNodePair()
+    {}
+};
+// Structures to store the sensors in.
+Vector<SensorNodePair> sensors;
+SensorNodePair storage_array[10];
 
 /*Sensors nodes[] = {
   {DHT22_TEMPERATURE_ID, HomieNode temperatureNode("temperature", "temperature")},
@@ -119,6 +131,8 @@ void setupHandler() {
     dhtu22 = new DHT_Unified(dht22Setting.get(), DHT22); // Initialize DHT sensor for normal 16mhz Arduino
     pinMode(dht22Setting.get(), OUTPUT);
     dhtu22->begin();
+    sensors.push_back(SensorNodePair(new DHT_Temperature(dhtu22), dht22_temperatureNode));
+    sensors.push_back(SensorNodePair(new DHT_Humidity(dhtu22), dht22_humidityNode));
     Homie.getLogger() << "DHT22 on pin " << dht22Setting.get() << endl;
   }
 }
@@ -144,6 +158,8 @@ void setup() {
   dht22Setting.setDefaultValue(0).setValidator([] (long candidate) {
     return (candidate >= 0) && (candidate <= 100);
   }); 
+
+  sensors.setStorage(storage_array);
 
   // TODO: I've commented out these if statements because as of homie 2.0.0,
   // the setting objects aren't setup before Homie.setup() is called. In 2.1, 
