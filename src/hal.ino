@@ -8,17 +8,18 @@ const int MEASURE_INTERVAL = 1; // How often to poll DHT22 for temperature and h
 unsigned long lastMeasureSent = 0;
 
 // The DHT Sensors
-#include "DHT.h"
+#include <DHT.h>
+#include <DHT_U.h>
 // Can be DHT11, DHT22 (AM2302), DHT21 (AM2301)
-DHT *dht11; // Initialize DHT sensor for normal 16mhz Arduino
+DHT_Unified *dhtu11; // Initialize DHT sensor for normal 16mhz Arduino
   HomieSetting<long> dht11Setting("dht11_pin", "Which pin to use.");  // id, description
   HomieNode *dht11_temperatureNode;
   HomieNode *dht11_humidityNode;
-DHT *dht21; // Initialize DHT sensor for normal 16mhz Arduino
+DHT_Unified *dhtu21; // Initialize DHT sensor for normal 16mhz Arduino
   HomieSetting<long> dht21Setting("dht21_pin", "Which pin to use.");  // id, description
   HomieNode *dht21_temperatureNode;
   HomieNode *dht21_humidityNode;
-DHT *dht22; // Initialize DHT sensor for normal 16mhz Arduino
+DHT_Unified *dhtu22; // Initialize DHT sensor for normal 16mhz Arduino
   HomieSetting<long> dht22Setting("dht22_pin", "Which pin to use.");  // id, description
   SensorNode *dht22_temperatureNode;
   SensorNode *dht22_humidityNode;
@@ -91,9 +92,9 @@ void setupHandler() {
     dht11_humidityNode->setProperty("unit").send("%");
 
     // Hardware part
-    dht11 = new DHT(dht11Setting.get(), DHT11); // Initialize DHT sensor for normal 16mhz Arduino
+    dhtu11 = new DHT_Unified(dht11Setting.get(), DHT11); // Initialize DHT sensor for normal 16mhz Arduino
     pinMode(dht11Setting.get(), OUTPUT);
-    dht11->begin();
+    dhtu11->begin();
     Homie.getLogger() << "DHT11 on pin " << dht11Setting.get() << endl;
   }
   if(dht21Setting.wasProvided())
@@ -103,22 +104,21 @@ void setupHandler() {
     dht21_humidityNode->setProperty("unit").send("%");
 
     // Hardware part
-    dht21 = new DHT(dht21Setting.get(), DHT21); // Initialize DHT sensor for normal 16mhz Arduino
+    dhtu21 = new DHT_Unified(dht21Setting.get(), DHT21); // Initialize DHT sensor for normal 16mhz Arduino
     pinMode(dht21Setting.get(), OUTPUT);
-    dht21->begin();
+    dhtu21->begin();
     Homie.getLogger() << "DHT21 on pin " << dht21Setting.get() << endl;
   }
   if(dht22Setting.wasProvided())
   {
-    // Next step: Figure out if these can live here or if they belong in setup().
     // Nodes part
     dht22_temperatureNode->setProperty("unit").send("c");
     dht22_humidityNode->setProperty("unit").send("%");
 
     // Hardware part
-    dht22 = new DHT(dht22Setting.get(), DHT22); // Initialize DHT sensor for normal 16mhz Arduino
+    dhtu22 = new DHT_Unified(dht22Setting.get(), DHT22); // Initialize DHT sensor for normal 16mhz Arduino
     pinMode(dht22Setting.get(), OUTPUT);
-    dht22->begin();
+    dhtu22->begin();
     Homie.getLogger() << "DHT22 on pin " << dht22Setting.get() << endl;
   }
 }
