@@ -41,12 +41,38 @@ struct SensorNodePair {
 Vector<SensorNodePair> sensors;
 SensorNodePair storage_array[10];
 
-/*Sensors nodes[] = {
-  {DHT22_TEMPERATURE_ID, HomieNode temperatureNode("temperature", "temperature")},
-  {DHT22_HUMIDITY_ID, HomieNode humidityNode("humidity", "humidity")}
-};
-*/
+class DHT_Temperature : public Adafruit_Sensor {
+  public:
+    DHT_Temperature(DHT_Unified* parent):
+      _dht_parent(parent)
+    {}
+    bool getEvent(sensors_event_t* event) {
+      return _dht_parent->temperature().getEvent(event);
+    }
 
+    void getSensor(sensor_t* sensor) {
+      _dht_parent->temperature().getSensor(sensor);
+    }
+  private:
+    DHT_Unified* _dht_parent;
+};
+
+class DHT_Humidity : public Adafruit_Sensor {
+  public:
+    DHT_Humidity(DHT_Unified* parent):
+      _dht_parent(parent)
+    {}
+    //bool getEvent(sensors_event_t* event);
+    bool getEvent(sensors_event_t* event) {
+      return _dht_parent->humidity().getEvent(event);
+    }
+
+    void getSensor(sensor_t* sensor) {
+      _dht_parent->humidity().getSensor(sensor);
+    }
+  private:
+    DHT_Unified* _dht_parent;
+};
 
 void loopHandler() {
   if (millis() - lastMeasureSent >= MEASURE_INTERVAL * 1000UL || lastMeasureSent == 0) {
