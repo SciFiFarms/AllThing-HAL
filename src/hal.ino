@@ -76,45 +76,29 @@ class DHT_Humidity : public Adafruit_Sensor {
 
 void loopHandler() {
   if (millis() - lastMeasureSent >= MEASURE_INTERVAL * 1000UL || lastMeasureSent == 0) {
-    if(dht11Setting.wasProvided())
+    sensors_event_t event;
+    sensor_t sensor;
+    float reading;
+
+    for(int i = 0; i < sensors.size(); i++)
     {
-      float temperature = dht11->readTemperature(); // Read temperature as Celsius
-      float humidity = dht11->readHumidity(); // Read humidity as relative [0-100]%
-      if (isnan(temperature) || isnan(humidity)) {
-        Homie.getLogger() << F("Failed to read from DHT sensor!");
-      } else {
-        Homie.getLogger() << F("Temperature: ") << temperature << " °C" << endl;
-        Homie.getLogger() << F("Humidity   : ") << humidity << " %" << endl;
-        dht11_temperatureNode->setProperty("degrees").send(String(temperature));
-        dht11_humidityNode->setProperty("relative").send(String(humidity));
-      }
-      lastMeasureSent = millis();
-    }
-    if(dht21Setting.wasProvided())
+      sensors[i].sensor->getSensor(&sensor);
+      sensors[i].sensor->getEvent(&event);
+      switch(sensor.type)
     {
-      float temperature = dht21->readTemperature(); // Read temperature as Celsius
-      float humidity = dht21->readHumidity(); // Read humidity as relative [0-100]%
-      if (isnan(temperature) || isnan(humidity)) {
-        Homie.getLogger() << F("Failed to read from DHT sensor!");
-      } else {
-        Homie.getLogger() << F("Temperature: ") << temperature << " °C" << endl;
-        Homie.getLogger() << F("Humidity   : ") << humidity << " %" << endl;
-        dht21_temperatureNode->setProperty("degrees").send(String(temperature));
-        dht21_humidityNode->setProperty("relative").send(String(humidity));
-      }
-      lastMeasureSent = millis();
-    }
-    if(dht22Setting.wasProvided())
-    {
-      float temperature = dht22->readTemperature(); // Read temperature as Celsius
-      float humidity = dht22->readHumidity(); // Read humidity as relative [0-100]%
-      if (isnan(temperature) || isnan(humidity)) {
-        Homie.getLogger() << F("Failed to read from DHT sensor!");
-      } else {
-        Homie.getLogger() << F("Temperature: ") << temperature << " °C" << endl;
-        Homie.getLogger() << F("Humidity   : ") << humidity << " %" << endl;
-        dht22_temperatureNode->setProperty("degrees").send(String(temperature));
-        dht22_humidityNode->setProperty("relative").send(String(humidity));
+        case SENSOR_TYPE_RELATIVE_HUMIDITY:
+          // TODO: Perhaps I could add a call in my local Adafruit_Senor class that has 
+          // this renamed to something more generic so that I can get
+          // numeric_sensors, and have it get and set "value".  
+          reading = event.relative_humidity;
+          sensors[i].node->setProperty("relative").send(String(reading));
+          Homie.getLogger() << F("Humidity   : ") << reading << " %" << endl;
+          break;
+        case SENSOR_TYPE_AMBIENT_TEMPERATURE:
+          reading = event.temperature;
+          sensors[i].node->setProperty("degrees").send(String(reading));
+          Homie.getLogger() << F("Temperature: ") << reading << " °C" << endl;
+          break;
       }
       lastMeasureSent = millis();
     }
