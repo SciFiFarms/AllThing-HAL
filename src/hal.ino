@@ -16,37 +16,6 @@ HomieSetting<long> dht22Setting("dht22_pin", "Which pin to use.");  // id, descr
 
 std::vector<SensorNodePair> sensors;
 
-void loopHandler() {
-  if (millis() - lastMeasureSent >= MEASURE_INTERVAL * 1000UL || lastMeasureSent == 0) {
-    sensors_event_t event;
-    sensor_t sensor;
-    float reading;
-
-    for(int i = 0; i < sensors.size(); i++)
-    {
-      sensors[i].sensor->getSensor(&sensor);
-      sensors[i].sensor->getEvent(&event);
-      switch(sensor.type)
-      {
-        case SENSOR_TYPE_RELATIVE_HUMIDITY:
-          reading = event.relative_humidity;
-          sensors[i].node->setValue(String(reading));
-          Homie.getLogger() << F("Humidity   : ") << reading << " %" << endl;
-          break;
-        case SENSOR_TYPE_AMBIENT_TEMPERATURE:
-          reading = event.temperature;
-          sensors[i].node->setValue(String(reading));
-          Homie.getLogger() << F("Temperature: ") << reading << " °C" << endl;
-          break;
-      }
-      lastMeasureSent = millis();
-    }
-  }
-}
-
-void setupHandler() {
-}
-
 void setup() {
   Serial.begin(115200); // Required to enable serial output
   Homie.setLedPin(15, HIGH);
@@ -85,6 +54,37 @@ void setup() {
   }
 
   Homie.setup();
+}
+
+void setupHandler() {
+}
+
+void loopHandler() {
+  if (millis() - lastMeasureSent >= MEASURE_INTERVAL * 1000UL || lastMeasureSent == 0) {
+    sensors_event_t event;
+    sensor_t sensor;
+    float reading;
+
+    for(int i = 0; i < sensors.size(); i++)
+    {
+      sensors[i].sensor->getSensor(&sensor);
+      sensors[i].sensor->getEvent(&event);
+      switch(sensor.type)
+      {
+        case SENSOR_TYPE_RELATIVE_HUMIDITY:
+          reading = event.relative_humidity;
+          sensors[i].node->setValue(String(reading));
+          Homie.getLogger() << F("Humidity   : ") << reading << " %" << endl;
+          break;
+        case SENSOR_TYPE_AMBIENT_TEMPERATURE:
+          reading = event.temperature;
+          sensors[i].node->setValue(String(reading));
+          Homie.getLogger() << F("Temperature: ") << reading << " °C" << endl;
+          break;
+      }
+      lastMeasureSent = millis();
+    }
+  }
 }
 
 
