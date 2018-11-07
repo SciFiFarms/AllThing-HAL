@@ -5,7 +5,6 @@
 #include <Homie.h>
 #include <Vector.h>
 #include "Constants.hpp"
-#include "sensor/SensorNodePair.hpp"
 
 class DhtTemperatureSensor : public Adafruit_Sensor {
   public:
@@ -41,7 +40,7 @@ class DhtHumiditySensor : public Adafruit_Sensor {
 
 class DhtSensor {
 public:
-  DhtSensor(std::vector<SensorNodePair> &sensors, uint8_t model, const char* temperatureId, const char* humidityId, uint8_t pin);
+  DhtSensor(std::vector<SensorNode*> &sensors, uint8_t model, const char* temperatureId, const char* humidityId, uint8_t pin);
 };
 
 /**
@@ -52,16 +51,14 @@ public:
   @param _id for the temperature node.
   @param pin that the sensor is plugged in to. 
  */
-DhtSensor::DhtSensor(std::vector<SensorNodePair> &sensors, uint8_t model, const char* temperatureId, const char* humidityId, uint8_t pin) {
+DhtSensor::DhtSensor(std::vector<SensorNode*> &sensors, uint8_t model, const char* temperatureId, const char* humidityId, uint8_t pin) {
     // Initialize DHT sensor
     DHT_Unified *dhtu = new DHT_Unified(pin, model); 
     pinMode(pin, OUTPUT);
     dhtu->begin();
     
     Homie.getLogger() << temperatureId << " and " << humidityId << " on pin " << pin << endl;
-    SensorNode *temperatureNode = new SensorNode(temperatureId, UNIT_TEMPERATURE);
-    SensorNode *humidityNode = new SensorNode(humidityId, UNIT_PERCENT);
      
-    sensors.push_back(SensorNodePair(new DhtTemperatureSensor(dhtu), temperatureNode));
-    sensors.push_back(SensorNodePair(new DhtHumiditySensor(dhtu), humidityNode));
+    sensors.push_back(new SensorNode(temperatureId, UNIT_TEMPERATURE, new DhtTemperatureSensor(dhtu)));
+    sensors.push_back(new SensorNode(humidityId, UNIT_PERCENT, new DhtHumiditySensor(dhtu)));
 }

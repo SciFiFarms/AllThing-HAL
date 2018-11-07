@@ -2,7 +2,6 @@
 #include <Homie.h>
 #include <Vector.h>
 #include "sensor/SensorNode.hpp"
-#include "sensor/SensorNodePair.hpp"
 #include "sensor/DhtSensor.hpp"
 
 // TODO: Refactor MEASURE_INTERVAL to be a setting that is retrieved.
@@ -14,7 +13,7 @@ HomieSetting<long> dht11Setting("dht11_pin", "Which pin to use.");  // id, descr
 HomieSetting<long> dht21Setting("dht21_pin", "Which pin to use.");  // id, description
 HomieSetting<long> dht22Setting("dht22_pin", "Which pin to use.");  // id, description
 
-std::vector<SensorNodePair> sensors;
+std::vector<SensorNode*> sensors;
 
 void setup() {
   Serial.begin(115200); // Required to enable serial output
@@ -67,18 +66,20 @@ void loopHandler() {
 
     for(int i = 0; i < sensors.size(); i++)
     {
+      sensors[i]->getSensor(&sensor);
+      sensors[i]->getEvent(&event);
       sensors[i].sensor->getSensor(&sensor);
       sensors[i].sensor->getEvent(&event);
       switch(sensor.type)
       {
         case SENSOR_TYPE_RELATIVE_HUMIDITY:
           reading = event.relative_humidity;
-          sensors[i].node->setValue(String(reading));
+          sensors[i]->setValue(String(reading));
           Homie.getLogger() << F("Humidity   : ") << reading << " %" << endl;
           break;
         case SENSOR_TYPE_AMBIENT_TEMPERATURE:
           reading = event.temperature;
-          sensors[i].node->setValue(String(reading));
+          sensors[i]->setValue(String(reading));
           Homie.getLogger() << F("Temperature: ") << reading << " °C" << endl;
           break;
       }
@@ -86,7 +87,6 @@ void loopHandler() {
     }
   }
 }
-
 
 void loop() {
   Homie.loop();
