@@ -7,9 +7,9 @@
 #include "Constants.hpp"
 #include "sensor/SensorNodePair.hpp"
 
-class DHT_Temperature : public Adafruit_Sensor {
+class DhtTemperatureSensor : public Adafruit_Sensor {
   public:
-    DHT_Temperature(DHT_Unified* parent):
+    DhtTemperatureSensor(DHT_Unified* parent):
       _dht_parent(parent)
     {}
     bool getEvent(sensors_event_t* event) {
@@ -23,9 +23,9 @@ class DHT_Temperature : public Adafruit_Sensor {
     DHT_Unified* _dht_parent;
 };
 
-class DHT_Humidity : public Adafruit_Sensor {
+class DhtHumiditySensor : public Adafruit_Sensor {
   public:
-    DHT_Humidity(DHT_Unified* parent):
+    DhtHumiditySensor(DHT_Unified* parent):
       _dht_parent(parent)
     {}
     bool getEvent(sensors_event_t* event) {
@@ -62,6 +62,6 @@ DhtSensor::DhtSensor(std::vector<SensorNodePair> &sensors, uint8_t model, const 
     SensorNode *temperatureNode = new SensorNode(temperatureId, UNIT_TEMPERATURE);
     SensorNode *humidityNode = new SensorNode(humidityId, UNIT_PERCENT);
      
-    sensors.push_back(SensorNodePair(new DHT_Temperature(dhtu), temperatureNode));
-    sensors.push_back(SensorNodePair(new DHT_Humidity(dhtu), humidityNode));
+    sensors.push_back(SensorNodePair(new DhtTemperatureSensor(dhtu), temperatureNode));
+    sensors.push_back(SensorNodePair(new DhtHumiditySensor(dhtu), humidityNode));
 }
