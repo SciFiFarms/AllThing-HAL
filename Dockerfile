@@ -11,7 +11,7 @@ RUN pio platform install espressif8266 --with-package framework-arduinoespressif
     && pio lib install "DHT sensor library" 
 # TODO: I should be able to get this running. It'll save some time building ESPs.
 #RUN ["platformio", "run" , "--environment", "nodemcuv2"]
-#RUN pio lib install git+https://github.com/SciFiFarms/AllThing-Homie.git#v2.1 
+#RUN pio lib install git+https://github.com/SciFiFarms/TechnoCore-Homie.git#v2.1 
 RUN mkdir -p /workspace/data/homie
 VOLUME /workspace
 ENTRYPOINT ["python", "entrypoint.py"]
