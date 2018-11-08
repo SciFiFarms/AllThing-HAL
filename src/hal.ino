@@ -39,18 +39,14 @@ void setup() {
   Homie.loadSettings();
 
   // Initialize any configured sensors.
+  // TODO: Rather than assign sensors/nodes based on a setting being present, 
+  // we should have a series of sensor_[X] settings.
   if(dht11Setting.wasProvided())
-  {
     new DhtSensor(sensors, DHT11, "dht11_temperature", "dht11_humidity", dht11Setting.get());
-  }
   if(dht21Setting.wasProvided())
-  {
     new DhtSensor(sensors, DHT21, "dht21_temperature", "dht21_humidity", dht21Setting.get());
-  }
   if(dht22Setting.wasProvided())
-  {
     new DhtSensor(sensors, DHT22, "dht22_temperature", "dht22_humidity", dht22Setting.get());
-  }
 
   Homie.setup();
 }
@@ -60,29 +56,9 @@ void setupHandler() {
 
 void loopHandler() {
   if (millis() - lastMeasureSent >= MEASURE_INTERVAL * 1000UL || lastMeasureSent == 0) {
-    sensors_event_t event;
-    sensor_t sensor;
-    float reading;
-
     for(int i = 0; i < sensors.size(); i++)
     {
-      sensors[i]->getSensor(&sensor);
-      sensors[i]->getEvent(&event);
-      sensors[i].sensor->getSensor(&sensor);
-      sensors[i].sensor->getEvent(&event);
-      switch(sensor.type)
-      {
-        case SENSOR_TYPE_RELATIVE_HUMIDITY:
-          reading = event.relative_humidity;
-          sensors[i]->setValue(String(reading));
-          Homie.getLogger() << F("Humidity   : ") << reading << " %" << endl;
-          break;
-        case SENSOR_TYPE_AMBIENT_TEMPERATURE:
-          reading = event.temperature;
-          sensors[i]->setValue(String(reading));
-          Homie.getLogger() << F("Temperature: ") << reading << " °C" << endl;
-          break;
-      }
+      sensors[i]->readSensorAndReport();
       lastMeasureSent = millis();
     }
   }
