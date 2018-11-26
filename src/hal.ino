@@ -3,6 +3,7 @@
 #include <Vector.h>
 #include "sensor/SensorNode.hpp"
 #include "sensor/DhtSensor.hpp"
+#include "sensor/TslSensor.hpp"
 
 // TODO: Refactor MEASURE_INTERVAL to be a setting that is retrieved.
 const int MEASURE_INTERVAL = 1; // How often to poll DHT22 for temperature and humidity
@@ -12,6 +13,8 @@ unsigned long lastMeasureSent = 0;
 HomieSetting<long> dht11Setting("dht11_pin", "Which pin to use.");  // id, description
 HomieSetting<long> dht21Setting("dht21_pin", "Which pin to use.");  // id, description
 HomieSetting<long> dht22Setting("dht22_pin", "Which pin to use.");  // id, description
+HomieSetting<long> tsl_scl("tsl_scl", "Which pin to use for scl.");  // id, description
+HomieSetting<long> tsl_sda("tsl_sda", "Which pin to use for sda.");  // id, description
 
 std::vector<SensorNode*> sensors;
 
@@ -36,6 +39,12 @@ void setup() {
   dht22Setting.setDefaultValue(0).setValidator([] (long candidate) {
     return (candidate >= 0) && (candidate <= 100);
   }); 
+  tsl_scl.setDefaultValue(0).setValidator([] (long candidate) {
+    return (candidate >= 0) && (candidate <= 100);
+  }); 
+  tsl_sda.setDefaultValue(0).setValidator([] (long candidate) {
+    return (candidate >= 0) && (candidate <= 100);
+  }); 
   Homie.loadSettings();
 
   // Initialize any configured sensors.
@@ -47,6 +56,9 @@ void setup() {
     new DhtSensor(sensors, DHT21, "dht21_temperature", "dht21_humidity", dht21Setting.get());
   if(dht22Setting.wasProvided())
     new DhtSensor(sensors, DHT22, "dht22_temperature", "dht22_humidity", dht22Setting.get());
+  if(tsl_scl.wasProvided() && tsl_sda.wasProvided())
+    new TslSensor(sensors, "tsl_lux", tsl_scl.get(), tsl_sda.get()); 
+
 
   Homie.setup();
 }
