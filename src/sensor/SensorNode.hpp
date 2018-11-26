@@ -47,5 +47,85 @@ void SensorNode::readSensorAndReport() {
       this->setValue(String(reading));
       Homie.getLogger() << F("Temperature: ") << reading << " °C" << endl;
       break;
+    case SENSOR_TYPE_LIGHT:
+      reading = event.light;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Light      : ") << reading << " Lux" << endl;
+      break;
+    case SENSOR_TYPE_PRESSURE:
+      reading = event.pressure;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Pressure   : ") << reading << " hPa" << endl;
+      break;
+    case SENSOR_TYPE_VOLTAGE:
+      reading = event.voltage;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Voltage    : ") << reading << " V" << endl;
+      break;
+    case SENSOR_TYPE_CURRENT:
+      reading = event.current;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Current    : ") << reading << " mA" << endl;
+      break;
+    default:
+      Homie.getLogger() << F("Could not get sensor type. ") << endl;
+
+    // TODO: These are not floats. They should get their own readingSENSOR_TYPES.
+    /**
+    case SENSOR_TYPE_ACCELEROMETER:
+      reading = event.acceleration;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Acceleration: ") << reading << "m/s^2" << endl;
+      break;
+    case SENSOR_TYPE_MAGNETIC_FIELD:
+      reading = event.magnetic;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Magnetic: ") << reading << "uT" << endl;
+      break;
+    case SENSOR_TYPE_ORIENTATION:
+      reading = event.orientation;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Orientation: ") << reading << "degrees" << endl;
+      break;
+    case SENSOR_TYPE_GYROSCOPE:
+      reading = event.gyro;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Gyro: ") << reading << "rads/s" << endl;
+      break;
+    case SENSOR_TYPE_COLOR:
+      reading = event.color;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Color: ") << reading << "RGB" << endl;
+      break;
+    case SENSOR_TYPE_GRAVITY:
+      reading = event.acceleration;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Gravity: ") << reading << "m/s^2" << endl;
+      break;
+    case SENSOR_TYPE_LINEAR_ACCELERATION:
+      reading = event.acceleration;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Acceleration not including gravity: ") << reading << "m/s^2" << endl;
+      break;
+    */
+
+    // I'm not sure what to do with a proximity sensor. It wasn't in the 
+    // struct union: https://github.com/adafruit/Adafruit_Sensor/blob/master/Adafruit_Sensor.h
+    /*
+    case SENSOR_TYPE_PROXIMITY:
+      reading = event.temperature;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Temperature: ") << reading << " °C" << endl;
+      break;
+    */
+    // I'm not sure what to do with a rotation vector sensor. It wasn't in the 
+    // struct union: https://github.com/adafruit/Adafruit_Sensor/blob/master/Adafruit_Sensor.h
+    /*
+    case SENSOR_TYPE_ROTATION_VECTOR:
+      reading = event.temperature;
+      this->setValue(String(reading));
+      Homie.getLogger() << F("Temperature: ") << reading << " °C" << endl;
+      break;
+    */
   }
 }
